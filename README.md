@@ -1,46 +1,33 @@
 # Covid-19-
-COVID-19, caused by the novel coronavirus SARS-CoV-2, is a highly contagious respiratory illness that emerged in late 2019. 
-Overview
-Name: COVID-19 (Coronavirus Disease 2019)
-Causative Agent: SARS-CoV-2 (Severe Acute Respiratory Syndrome Coronavirus 2)
-First Identified: December 2019 in Wuhan, Hubei province, China
-Transmission: Primarily spreads through respiratory droplets when an infected person coughs, sneezes, talks, or breathes. It can also spread by touching surfaces contaminated with the virus and then touching the face.
-Symptoms
-COVID-19 symptoms can range from mild to severe and may appear 2-14 days after exposure to the virus. Common symptoms include:
+import pandas as pd
 
-Fever or chills
-Cough
-Shortness of breath or difficulty breathing
-Fatigue
-Muscle or body aches
-Headache
-New loss of taste or smell
-Sore throat
-Congestion or runny nose
-Nausea or vomiting
-Diarrhea
-Severity
-Asymptomatic: Some individuals may carry the virus without showing any symptoms.
-Mild to Moderate: Most cases experience mild to moderate symptoms and recover without special treatment.
-Severe Cases: Some individuals, particularly older adults and those with underlying health conditions, may develop severe respiratory illness, pneumonia, acute respiratory distress syndrome (ARDS), organ failure, or death.
-Prevention
-Preventive measures to reduce the spread of COVID-19 include:
+# Load the dataset from the JHU repository
+url = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv'
+df = pd.read_csv(url)
 
-Wearing masks in crowded or enclosed spaces
-Practicing physical distancing (maintaining at least 6 feet from others)
-Regular hand washing with soap and water or using hand sanitizer
-Avoiding large gatherings
-Staying home when feeling unwell
-Getting vaccinated
-Vaccination
-Several vaccines have been developed and authorized for emergency use to prevent COVID-19. Vaccination has been shown to significantly reduce the risk of severe illness, hospitalization, and death.
+# Display the first few rows of the dataset
+print("First few rows of the dataset:")
+print(df.head())
 
-Global Impact
-COVID-19 has led to widespread health, economic, and social impacts worldwide, including:
+# Data Cleaning
+# Melt the DataFrame to have a long format
+df_melted = df.melt(id_vars=['Province/State', 'Country/Region', 'Lat', 'Long'],
+                    var_name='Date', value_name='Confirmed Cases')
 
-Overwhelmed healthcare systems
-Economic downturns and job losses
-Disruptions to education and daily life
-Mental health challenges due to isolation and uncertainty
-Conclusion
-COVID-19 remains a significant global health challenge, and ongoing efforts are focused on vaccination, treatment, and public health measures to control its spread. Continued research is essential to understand the virus better, develop effective treatments, and adapt to emerging variants.
+# Convert the 'Date' column to datetime format
+df_melted['Date'] = pd.to_datetime(df_melted['Date'])
+
+# Group by date and country to get total confirmed cases
+df_grouped = df_melted.groupby(['Date', 'Country/Region'])['Confirmed Cases'].sum().reset_index()
+
+# Display the cleaned and grouped data
+print("\nGrouped data (total confirmed cases by date and country):")
+print(df_grouped.head())
+
+# Example: Filter data for a specific country (e.g., United States)
+us_data = df_grouped[df_grouped['Country/Region'] == 'US']
+
+# Display the US data
+print("\nCOVID-19 data for the United States:")
+print(us_data.head())
+
